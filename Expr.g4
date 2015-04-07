@@ -1,11 +1,16 @@
 grammar Expr;		
-prog:	(expr NEWLINE | CLASS | DEF)* ;
+prog:	(expr NEWLINE | CLASS | seq)*  ;
+seq:	L_S_BRACKET (NOTE COMMA)* NOTE R_S_BRACKET ; 
 expr:	expr ('*'|'/') expr
     |	expr ('+'|'-') expr
     |	INT
 	|   FLOAT
+	|   STRING
+	|   ID
+	|	ASSIGN	
     |	'(' expr ')'
     ;
+
 NEWLINE : [\r\n]+ ;
 INT     : [0-9]+ ;
 
@@ -27,8 +32,8 @@ DEL			: 'del' ;
 THIS		: 'this' ; 
 
 fragment DIGIT 			: [0-9] ;
-fragment EXPONENT	: [+-]? DIGIT+;
-FLOAT				: DIGIT+ '.' DIGIT+ EXPONENT? ;
+fragment EXPONENT		: [+-]? DIGIT+;
+FLOAT					: DIGIT+ '.' DIGIT+ EXPONENT? ;
 
 L_BRACKET 		: '{' ;
 R_BRACKET 		: '}' ;
@@ -39,7 +44,7 @@ R_P				: ')' ;
 
 NOTE 			: [A-Ga-gR|r] [0-8] [w|h|q|e|s] ;
 
-IDENTIFIER: [a-zA-z][a-zA-Z0-9_]*;
+ID 				: [a-zA-z][a-zA-Z0-9_]*;
 
 PLUSASSIGN 		: '+=' ;
 MINUSASSIGN 	: '-=' ;
@@ -61,3 +66,13 @@ LESS 		: '<' ;
 GREATER 	: '>' ;
 SHARP 		: '#' ;
 FLAT 		: '~' ;
+
+COMMA		: ',' ;
+SEMICOLON   : ';' ;
+
+STRING					: '"' STRING_GUTS '"' ;
+fragment STRING_GUTS 	: (ESC | ~('\\' | '"'))* ;
+ESC						: '\\' ('\\' | '"') ;
+
+CMT		: '/$' .*? '$/' ;
+SCMT	: '$$' ~('\r' | '\n')* ;
